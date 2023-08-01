@@ -20,7 +20,10 @@ jobs:
             export GOARCH=amd64
             mkdir -p ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/
             ln -s ~/project ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-            go build -v github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/cmd/grafana-reporter
+            go build -v github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/cmd/grafana-reporter -o /tmp/grafana-reporter
+      - store_artifacts:
+          path: /tmp/grafana-reporter
+          destination: grafana-reporter
 
 workflows:
   version: 2
