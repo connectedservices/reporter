@@ -11,7 +11,6 @@ jobs:
     docker:
       - image: cimg/go:1.14.7
         <<: *docker-auth
-    working_directory: ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}
     steps:
       - checkout
       - run:
@@ -19,7 +18,9 @@ jobs:
           command: |
             export GOOS=linux
             export GOARCH=amd64
-            go build -v github.com/connectedservices/reporter/cmd/grafana-reporter
+            mkdir -p ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/
+            ln -s ~/project ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+            go build -v github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/cmd/grafana-reporter
 
 workflows:
   version: 2
