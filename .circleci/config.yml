@@ -29,3 +29,11 @@ workflows:
     jobs:
       - build:
           context: org-global
+      - approve_publish:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - master
