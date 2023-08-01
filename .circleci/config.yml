@@ -18,21 +18,26 @@ jobs:
           command: |
             export GOOS=linux
             export GOARCH=amd64
-            go build -ldflags "-X main.GitSHA=${GIT_SHA}" -o bin/grafana-reporter ./cmd/grafana-reporter
+
+            export BUILD_DIR="$(pwd)/cmd/grafana-reporter"
+
+            if [[ "$CIRCLE_BRANCH" =~ "master" ]]; then
+              MAJOR=$(grep generatedMajor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
+              MINOR=$(grep generatedMinor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
+              RELEASE=$(grep generatedRelease ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "''"')
+              VERSION="${MAJOR}.${MINOR}-${RELEASE}"
+            else
+              VERSION=${CIRCLE_SHA1::7}
+            fi
+
+            go build -ldflags "-X main.generatedGitHash=${CIRCLE_SHA1}" -o bin/${VERSION}/grafana-reporter ./cmd/grafana-reporter
+
       - store_artifacts:
-          path: bin/grafana-reporter
-          destination: grafana-reporter
+          path: bin/
+
 workflows:
   version: 2
   main:
     jobs:
       - build:
           context: org-global
-      - approve_publish:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - master
