@@ -24,7 +24,7 @@ jobs:
             if [[ "$CIRCLE_BRANCH" =~ "master" ]]; then
               MAJOR=$(grep generatedMajor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
               MINOR=$(grep generatedMinor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
-              RELEASE=$(grep generatedRelease ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "''"')
+              RELEASE=$(grep generatedRelease ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
 
               VERSION="${MAJOR}.${MINOR}-${RELEASE}"
             else
@@ -77,3 +77,10 @@ workflows:
             branches:
               ignore:
                 - master
+      - publish:
+          context: org-global
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
