@@ -18,13 +18,10 @@ jobs:
           command: |
             export GOOS=linux
             export GOARCH=amd64
-            mkdir -p ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/
-            ln -s ~/project ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-            go build -o /tmp/grafana-reporter -v github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/cmd/grafana-reporter
+            go build -o bin/grafana-reporter -v github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/cmd/grafana-reporter
       - store_artifacts:
-          path: /tmp/grafana-reporter
+          path: bin/grafana-reporter
           destination: grafana-reporter
-
 workflows:
   version: 2
   main:
