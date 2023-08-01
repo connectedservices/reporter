@@ -1,0 +1,31 @@
+---
+version: 2.1
+
+docker-auth: &docker-auth
+  auth:
+    username: $DOCKERHUB_USERNAME
+    password: $DOCKERHUB_PASSWORD
+
+jobs:
+  build:
+    docker:
+      - image: cimg/go:1.14.7
+        <<: *docker-auth
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            export GOOS=linux
+            export GOARCH=amd64
+            go build -v github.com/connectedservices/reporter/cmd/grafana-reporter
+      - store_artifacts:
+        path: grafana-reporter
+        destination: grafana-reporter
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+          context: org-global
