@@ -18,7 +18,7 @@ jobs:
           command: |
             export GOOS=linux
             export GOARCH=amd64
-            go build -o bin/grafana-reporter -v github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/cmd/grafana-reporter
+            go build -ldflags "-X main.GitSHA=${GIT_SHA}" -o bin/grafana-reporter ./cmd/grafana-reporter
       - store_artifacts:
           path: bin/grafana-reporter
           destination: grafana-reporter

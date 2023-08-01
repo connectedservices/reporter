@@ -11,5 +11,3 @@ require (
 	github.com/smartystreets/assertions v0.0.0-20170925172151-0b37b35ec743
 	github.com/smartystreets/goconvey v1.6.3
 )
-
-replace github.com/connectedservices/reporter => ../reporter
