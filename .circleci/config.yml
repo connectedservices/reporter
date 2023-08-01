@@ -9,7 +9,7 @@ docker-auth: &docker-auth
 jobs:
   build:
     docker:
-      - image: cimg/go:1.14.7
+      - image: cimg/go:1.19.11
         <<: *docker-auth
     steps:
       - checkout
