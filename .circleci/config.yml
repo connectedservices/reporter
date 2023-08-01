@@ -11,6 +11,7 @@ jobs:
     docker:
       - image: cimg/go:1.14.7
         <<: *docker-auth
+    working_directory: ${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}
     steps:
       - checkout
       - run:
