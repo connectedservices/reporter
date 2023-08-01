@@ -19,9 +19,6 @@ jobs:
             export GOOS=linux
             export GOARCH=amd64
             go build -v github.com/connectedservices/reporter/cmd/grafana-reporter
-      - store_artifacts:
-        path: grafana-reporter
-        destination: grafana-reporter
 
 workflows:
   version: 2
