@@ -1,0 +1,84 @@
+---
+version: 2.1
+
+docker-auth: &docker-auth
+  auth:
+    username: $DOCKERHUB_USERNAME
+    password: $DOCKERHUB_PASSWORD
+
+jobs:
+  build:
+    docker:
+      - image: cimg/go:1.19.11
+        <<: *docker-auth
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            export GOOS=linux
+            export GOARCH=amd64
+
+            export BUILD_DIR="$(pwd)/cmd/grafana-reporter"
+
+            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
+              MAJOR=$(grep generatedMajor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
+              MINOR=$(grep generatedMinor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
+              RELEASE=$(grep generatedRelease ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
+
+              VERSION="${MAJOR}.${MINOR}.${RELEASE}"
+            else
+              VERSION="sha-${CIRCLE_SHA1::7}"
+            fi
+            echo "export VERSION=${VERSION}" > version.sh
+
+            go build -ldflags "-X main.generatedGitHash=${CIRCLE_SHA1}" -o bin/${VERSION}/grafana-reporter ./cmd/grafana-reporter
+
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - "version.sh"
+            - "bin/*/grafana-reporter"
+
+  publish:
+    docker:
+      - image: cimg/aws:2023.07
+        <<: *docker-auth
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Publish artifact
+          command: |
+            source version.sh
+            aws s3 cp bin/${VERSION}/grafana-reporter "s3://${ARTIFACTS_BUCKET}/grafana-reporter/${VERSION}/grafana-reporter"
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+          context: org-global
+      - approve_publish:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - master
+      - publish:
+          context: org-global
+          requires:
+            - approve_publish
+          filters:
+            branches:
+              ignore:
+                - master
+      - publish:
+          context: org-global
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
