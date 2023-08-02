@@ -26,7 +26,8 @@ import (
 type PanelType int
 
 const (
-	Stat PanelType = iota
+	SingleStat PanelType = iota
+	Stat
 	Text
 	Graph
 	Table
@@ -34,6 +35,7 @@ const (
 
 func (p PanelType) string() string {
 	return [...]string{
+		"singlestat",
 		"stat",
 		"text",
 		"graph",
@@ -130,6 +132,10 @@ func populatePanelsFromV5JSON(dash Dashboard, dc dashContainer) Dashboard {
 		dash.Panels = append(dash.Panels, p)
 	}
 	return dash
+}
+
+func (p Panel) IsSingleStat() bool {
+	return p.Is(SingleStat)
 }
 
 func (p Panel) IsStat() bool {
