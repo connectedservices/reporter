@@ -26,7 +26,7 @@ jobs:
               MINOR=$(grep generatedMinor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
               RELEASE=$(grep generatedRelease ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
 
-              VERSION="${MAJOR}.${MINOR}-${RELEASE}"
+              VERSION="${MAJOR}.${MINOR}.${RELEASE}"
             else
               VERSION="sha-${CIRCLE_SHA1::7}"
             fi
@@ -34,8 +34,6 @@ jobs:
 
             go build -ldflags "-X main.generatedGitHash=${CIRCLE_SHA1}" -o bin/${VERSION}/grafana-reporter ./cmd/grafana-reporter
 
-      - store_artifacts:
-          path: bin/
       - persist_to_workspace:
           root: ./
           paths:
