@@ -21,7 +21,7 @@ jobs:
 
             export BUILD_DIR="$(pwd)/cmd/grafana-reporter"
 
-            if [[ "$CIRCLE_BRANCH" =~ "master" ]]; then
+            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
               MAJOR=$(grep generatedMajor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
               MINOR=$(grep generatedMinor ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
               RELEASE=$(grep generatedRelease ${BUILD_DIR}/version.go |awk -F'=' '{print $2}' |tr -d ' "')
